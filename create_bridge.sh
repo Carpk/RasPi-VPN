@@ -1,5 +1,5 @@
-# need a shell script to find addresses of node, and gateway, 
-# and append them to /etc/network/interfaces
+# Shell script to find addresses of node, subnet, and gateway, 
+# then append them to /etc/network/interfaces
 
 LOCAL_ADDR="$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')"
 SUB_MASK="$(ifconfig | grep -E '(Mask:)?([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | grep -Eo '(255.)[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}')"
@@ -23,3 +23,8 @@ up ip link set $IFACE promisc on
 down ip link set $IFACE promisc off
 down ifconfig $IFACE down
 ' >> test
+
+# Allow port forwarding
+# uncomment net.ipv4.ip_forward=1 in /etc/sysctl.conf
+
+sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' test
